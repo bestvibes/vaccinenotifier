@@ -23,7 +23,7 @@ recipients = sys.argv[4].split(',')
 
 assert len(zipcode) == 5
 for recipient in recipients:
-    assert(recipient[0] == '+' and recipient[1] == '1')
+    assert(recipient[0] == '+' and recipient[1] == '1' and len(recipient)==12)
 
 if age <= 16:
     agetext = "Under 16"
