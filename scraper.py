@@ -26,12 +26,16 @@ assert len(zipcode) == 5
 for recipient in recipients:
     assert(recipient[0] == '+' and recipient[1] == '1')
 
-if age <= 49:
+if age <= 16:
+    agetext = "Under 16"
+elif age <= 49:
     agetext = "16 - 49"
 elif age <= 64:
     agetext = "50-64"
+elif age <= 74:
+    agetext = "65 - 74"
 else:
-    assert("bad age")
+    agetext = "75 and older"
 
 URL = 'https://myturn.ca.gov'
 options = webdriver.ChromeOptions()
