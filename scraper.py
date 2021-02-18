@@ -8,7 +8,7 @@ import os
 
 fromnumber="+15102161731"
 sleeptime = 3
-chromedriver = '/Users/vaibhavaggarwal/projects/covidscraper/chromedriver'
+chromedriver = '/Users/vaibhavaggarwal/projects/vaccinenotifier/chromedriver'
 
 if (len(sys.argv) != 5):
     print(f"Usage: {sys.argv[0]} age industry zipcode recipient")
@@ -19,7 +19,7 @@ age = int(sys.argv[1])
 industry = sys.argv[2]
 zipcode = sys.argv[3]
 recipients = sys.argv[4].split(',')
-print(f"Checking for age={age} ind={industry} recipients={recipients} at {currtime}")
+print(f"Checking for age={age} ind={industry} recipients={recipients} zip={zipcode} at {currtime}")
 
 assert(len(zipcode) == 5)
 for recipient in recipients:
@@ -75,7 +75,7 @@ elif ('location' in driver.current_url):
         print("APPOINTMENTS AVAILABLE!")
         for recipient in recipients:
             message = tclient.messages.create(
-                body=f"Appointments available for age={agetext} ind={industry} at {currtime}. {URL}",
+                body=f"Appointments available for age={agetext} ind={industry} zip={zipcode} at {currtime}. {URL}",
                 from_=fromnumber,
                 to=recipient
             )
