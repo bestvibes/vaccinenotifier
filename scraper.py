@@ -40,7 +40,7 @@ else:
 URL = 'https://myturn.ca.gov'
 options = webdriver.ChromeOptions()
 options.add_argument('headless')
-driver = webdriver.Chrome(CHROMEDRIVER, options=options)
+driver = webdriver.Chrome(options=options)
 driver.get(URL)
 
 time.sleep(SLEEPTIME)
