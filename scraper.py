@@ -20,7 +20,6 @@ age = int(sys.argv[1])
 industry = sys.argv[2]
 zipcode = sys.argv[3]
 recipients = sys.argv[4].split(',')
-print(f"Checking for age={age} ind={industry} recipients={recipients} zip={zipcode} at {currtime}")
 
 assert len(zipcode) == 5
 for recipient in recipients:
@@ -37,6 +36,7 @@ elif age <= 74:
 else:
     agetext = "75 and older"
 
+print(f"Checking for age={agetext} ind={industry} recipients={recipients} zip={zipcode} at {currtime}")
 URL = 'https://myturn.ca.gov'
 options = webdriver.ChromeOptions()
 options.add_argument('headless')
@@ -56,9 +56,9 @@ driver.find_element_by_xpath("//button[@type='submit']").click()
 time.sleep(SLEEPTIME)
 
 if 'ineligible' in driver.current_url:
-    print(f"INELIGIBLE for age={age} and industry={industry}")
+    print(f"INELIGIBLE for age={agetext} and industry={industry}")
 elif 'location' in driver.current_url:
-    print(f"ELIGIBLE for age={age} and industry={industry}")
+    print(f"ELIGIBLE for age={agetext} and industry={industry}")
 
     driver.find_element_by_xpath("//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
     # driver.find_element_by_xpath("//*[@id='root']/div/main/div/div[3]/button[1]").click()
