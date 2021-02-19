@@ -3,3 +3,4 @@ venv
 twilio.sh
 list.csv
 clean_list.csv
+__pycache__
