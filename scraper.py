@@ -19,7 +19,7 @@ def get_industries():
     return ["Financial services", "Education and childcare", "Communications and IT", "65 - 74", "75 and older"]
 def age_to_range(age):
     age_ranges = get_age_ranges()
-    if isinstance(age, str):
+    if isinstance(age, str) and age in age_ranges:
         ret = age
     else:
         age = int(age)
