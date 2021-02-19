@@ -9,7 +9,6 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from twilio.rest import Client
 
-FROMNUMBER="+15102161731"
 SLEEPTIME = 3
 CHROMEDRIVER = '/Users/vaibhavaggarwal/projects/vaccinenotifier/chromedriver'
 
@@ -85,13 +84,15 @@ def main():
 
         account_sid = os.environ['TWILIO_ACCOUNT_SID']
         auth_token = os.environ['TWILIO_AUTH_TOKEN']
+        fromnumber = os.environ['TWILIO_FROM_NUMBER']
+        maintainernum = os.environ['MAINTAINER_NUM']
         tclient = Client(account_sid, auth_token)
         if 'No appointments are available' in driver.page_source:
             print("APPOINTMENTS NOT AVAILABLE!")
             # for recipient in recipients:
             # message = tclient.messages.create(
             # body=f"Appointments not available for {age} in {industry} at {zipcode} at {currtime}. {URL}",
-            # from_=FROMNUMBER,
+            # from_=fromnumber,
             # to=recipient
             # )
             # print(recipient, message.sid)
@@ -100,12 +101,17 @@ def main():
             for recipient in recipients:
                 message = tclient.messages.create(
                     body=f"Appointments available for {age} in {industry} at {zipcode} at {currtime}. {URL}",
-                    from_=FROMNUMBER,
+                    from_=fromnumber,
                     to=recipient
                 )
                 print(recipient, message.sid)
     else:
         print("IDK WHERE I AM:", driver.current_url)
+        message = tclient.messages.create(
+            body=f"Notifier failed for {age} in {industry} at {zipcode} at {currtime}!",
+            from_=fromnumber,
+            to=maintainernum
+        )
 
     driver.close()
 
