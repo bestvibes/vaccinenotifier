@@ -73,6 +73,11 @@ def main():
     driver.find_element_by_xpath("//button[@type='submit']").click()
     time.sleep(SLEEPTIME)
 
+    account_sid = os.environ['TWILIO_ACCOUNT_SID']
+    auth_token = os.environ['TWILIO_AUTH_TOKEN']
+    fromnumber = os.environ['TWILIO_FROM_NUMBER']
+    maintainernum = os.environ['MAINTAINER_NUM']
+    tclient = Client(account_sid, auth_token)
     if 'ineligible' in driver.current_url:
         print(f"INELIGIBLE for age={age} and industry={industry}")
     elif 'location' in driver.current_url:
@@ -82,11 +87,6 @@ def main():
         # driver.find_element_by_xpath("//*[@id='root']/div/main/div/div[3]/button[1]").click()
         time.sleep(SLEEPTIME)
 
-        account_sid = os.environ['TWILIO_ACCOUNT_SID']
-        auth_token = os.environ['TWILIO_AUTH_TOKEN']
-        fromnumber = os.environ['TWILIO_FROM_NUMBER']
-        maintainernum = os.environ['MAINTAINER_NUM']
-        tclient = Client(account_sid, auth_token)
         if 'No appointments are available' in driver.page_source:
             print("APPOINTMENTS NOT AVAILABLE!")
             # for recipient in recipients:
