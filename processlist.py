@@ -22,4 +22,4 @@ for l in lines:
     l[0] = '"'+age_to_range(l[0])+'"'
 print(lines)
 with open("clean_"+filename, 'w+') as f:
-    f.write('\n'.join(map(','.join, lines)).replace('"', ""))
+    f.write('\n'.join(map(','.join, lines)).replace('"', "")+'\n')
