@@ -27,9 +27,10 @@ for l in lines:
 grouped_lines = []
 for k,g in itertools.groupby(sorted(lines), key=lambda l: l[:-1]):
     group = k
-    numbers = []
+    numbers = set()
     for line in g:
-        numbers.extend(line[-1].split('|'))
+        for n in line[-1].split('|'):
+            numbers.add(n)
     group.append('|'.join(numbers))
     grouped_lines.append(group)
 print(grouped_lines)
