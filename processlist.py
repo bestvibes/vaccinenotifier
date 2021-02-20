@@ -14,7 +14,7 @@ for filename in sys.argv[1:]:
     with open(filename, 'r') as f:
         lines.extend(f.readlines())
 lines = [l.replace('"',"").strip().split(',') for l in lines if '#' not in l and l.strip() != ""]
-lines = [d.strip() for d in l for l in lines]
+lines = [[d.strip() for d in l] for l in lines]
 industries = get_industries()
 for l in lines:
     assert len(l) == 5, l
