@@ -16,6 +16,7 @@ for filename in sys.argv[1:]:
 lines = [l.replace('"',"").strip().split(',') for l in lines if '#' not in l and l.strip() != ""]
 industries = get_industries()
 for l in lines:
+    l = list(map(str.strip, l))
     assert len(l) == 5, l
     assert l[1].replace('"', "") in industries, l
     assert l[2][0].isupper(), l
@@ -37,4 +38,4 @@ for k,g in itertools.groupby(sorted(lines), key=lambda l: l[:-1]):
     grouped_lines.append(group)
 print(grouped_lines)
 with open("clean_list.csv", 'w+') as f:
-    f.write('\n'.join(map(lambda l: ','.join(map(str.strip, l)), grouped_lines)).replace('"', "")+'\n')
+    f.write('\n'.join(map(','.join, grouped_lines)).replace('"', "")+'\n')
