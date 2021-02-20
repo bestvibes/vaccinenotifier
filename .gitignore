@@ -4,3 +4,4 @@ twilio.sh
 list.csv
 clean_list.csv
 __pycache__
+run.log
