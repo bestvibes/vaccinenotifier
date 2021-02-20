@@ -16,9 +16,10 @@ for l in lines:
     assert len(l) == 4, l
     assert l[1].replace('"', "") in industries, l
     assert len(l[2]) == 5, l
-    assert len(l[3]) == 12, l
-    assert l[3][0] == '+', l
-    assert l[3][1] == '1', l
+    assert len(l[3]) >= 12, l
+    for num in l[3].split('|'):
+        assert num[0] == '+', num
+        assert num[1] == '1', num
     l[0] = '"'+age_to_range(l[0])+'"'
 print(lines)
 with open("clean_"+filename, 'w+') as f:

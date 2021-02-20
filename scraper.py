@@ -45,7 +45,7 @@ def main():
     age = sys.argv[1]
     industry = sys.argv[2]
     zipcode = sys.argv[3]
-    recipients = sys.argv[4].split(',')
+    recipients = sys.argv[4].split('|')
 
     assert len(zipcode) == 5
     for recipient in recipients:
