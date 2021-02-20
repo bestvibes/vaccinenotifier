@@ -1,8 +1,7 @@
 chromedriver
 venv
-twilio.sh
-list.csv
-clean_list.csv
+env.sh
+*.csv
 __pycache__
-run.log
-credentials.json
+*.log
+*.json
