@@ -36,24 +36,26 @@ def age_to_range(age):
     return ret
 
 def main():
-    if len(sys.argv) != 5:
+    if len(sys.argv) != 6:
         print(sys.argv)
-        print(f"Usage: {sys.argv[0]} age industry zipcode recipient")
+        print(f"Usage: {sys.argv[0]} age industry county zipcode recipient")
         sys.exit(1)
 
     currtime = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
     age = sys.argv[1]
     industry = sys.argv[2]
-    zipcode = sys.argv[3]
-    recipients = sys.argv[4].split('|')
+    county = sys.argv[3]
+    zipcode = sys.argv[4]
+    recipients = sys.argv[5].split('|')
 
+    assert county[0].isupper(), county
     assert len(zipcode) == 5
     for recipient in recipients:
         assert(recipient[0] == '+' and recipient[1] == '1' and len(recipient)==12)
 
     age = age_to_range(age)
 
-    print(f"Checking for age={age} ind={industry} recipients={recipients} zip={zipcode} at {currtime}")
+    print(f"Checking for age={age} ind={industry} county={county} recipients={recipients} zip={zipcode} at {currtime}")
     URL = 'https://myturn.ca.gov'
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
@@ -69,7 +71,7 @@ def main():
     driver.find_element_by_xpath("//input[@name='q-screening-privacy-statement']").click()
     driver.find_element_by_xpath("//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
     driver.find_element_by_xpath("//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
-    driver.find_element_by_xpath("//select[@name='q-screening-eligibility-county']/option[text()='Alameda']").click()
+    driver.find_element_by_xpath("//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
     driver.find_element_by_xpath("//button[@type='submit']").click()
     time.sleep(SLEEPTIME)
 
@@ -79,9 +81,9 @@ def main():
     maintainernum = os.environ['MAINTAINER_NUM']
     tclient = Client(account_sid, auth_token)
     if 'ineligible' in driver.current_url:
-        print(f"INELIGIBLE for age={age} and industry={industry}")
+        print(f"INELIGIBLE for age={age}  county={county} industry={industry}")
     elif 'location' in driver.current_url:
-        print(f"ELIGIBLE for age={age} and industry={industry}")
+        print(f"ELIGIBLE for age={age} county={county} industry={industry}")
 
         driver.find_element_by_xpath("//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
         # driver.find_element_by_xpath("//*[@id='root']/div/main/div/div[3]/button[1]").click()
@@ -100,7 +102,7 @@ def main():
             print("APPOINTMENTS AVAILABLE!")
             for recipient in recipients:
                 message = tclient.messages.create(
-                    body=f"Appointments available for {age} in {industry} at {zipcode} at {currtime}. {URL}",
+                    body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}",
                     from_=fromnumber,
                     to=recipient
                 )
@@ -108,7 +110,7 @@ def main():
     else:
         print("IDK WHERE I AM:", driver.current_url)
         message = tclient.messages.create(
-            body=f"Notifier failed for {age} in {industry} at {zipcode} at {currtime}!",
+            body=f"Notifier failed for {age} in {industry} at {county},{zipcode} at {currtime}!",
             from_=fromnumber,
             to=maintainernum
         )
