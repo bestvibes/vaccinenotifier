@@ -37,16 +37,26 @@ def main():
     if not values:
         print('No data found.')
     else:
+        # first row is header
         values = values[0:1] + sorted(values[1:], key=lambda v: v[0]) # sort by timestamp
-        # TODO: add unsubscription logic
-        for i,row in enumerate(values):
+        subscriptions_list = []
+        print(values[0])
+        for row in values[1:]:
             assert len(row) == 7, row
-            if i > 0:
-                row[6] = "+1"+row[6]
-            print(','.join(row))
-        print(f'Found {len(values)-1} rows. Exporting...')
+            row[6] = "+1"+row[6]
+            assert(row[1] in ["Subscribe", "Unsubscribe"])
+            if (row[1] == "Subscribe"):
+                subscriptions_list.append(row)
+                newsize = len(subscriptions_list)
+                print('SUB:', ','.join(row), "newsize:", newsize)
+            else:
+                origsize = len(subscriptions_list)
+                subscriptions_list = list(filter(lambda s: s[6] != row[6], subscriptions_list))
+                newsize = len(subscriptions_list)
+                print('UNSUB:', ','.join(row), " oldsize:", origsize, "newsize:", newsize)
+        print(f'Found {len(subscriptions_list)} subscriptions. Exporting...')
         with open('sheets.csv', 'w+') as f:
-            f.write('\n'.join(map(lambda x: ','.join(x[2:]), filter(lambda v: "Subscribe" in v, values[1:])))+'\n')
+            f.write('\n'.join(map(lambda x: ','.join(x[2:]), subscriptions_list))+'\n')
 
 if __name__ == '__main__':
     main()
