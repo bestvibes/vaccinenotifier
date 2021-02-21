@@ -67,7 +67,7 @@ def main():
     age = age_to_range(age)
 
     try:
-        print(f"Checking for age={age} ind={industry} county={county} recipients={recipients} zip={zipcode} at {currtime}")
+        print(f"Checking for age={age} ind={industry} county={county} zip={zipcode} at {currtime}\nrecipients={recipients}")
         URL = 'https://myturn.ca.gov'
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
@@ -94,7 +94,7 @@ def main():
         signuplink = os.environ['SIGNUP_LINK']
         tclient = Client(account_sid, auth_token)
         if 'ineligible' in driver.current_url:
-            print(f"INELIGIBLE for age={age}  county={county} industry={industry}")
+            print(f"INELIGIBLE for age={age} county={county} industry={industry}")
         elif 'location' in driver.current_url:
             print(f"ELIGIBLE for age={age} county={county} industry={industry}")
 
@@ -125,6 +125,7 @@ def main():
                 from_=fromnumber,
                 to=maintainernum
             )
+            print(maintainernum, message.sid)
     finally:
         driver.close()
 
