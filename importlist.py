@@ -38,12 +38,13 @@ def main():
         print('No data found.')
     else:
         for i,row in enumerate(values):
+            assert len(row) == 7
             if i > 0:
                 row[5] = "+1"+row[5]
             print(','.join(row))
         print(f'Found {len(values)-1} rows. Exporting...')
         with open('sheets.csv', 'w+') as f:
-            f.write('\n'.join(map(lambda x: ','.join(x[1:-1]), values[1:]))+'\n')
+            f.write('\n'.join(map(lambda x: ','.join(x[1:-1]), filter(lambda v: "Added" in v, values[1:])))+'\n')
 
 if __name__ == '__main__':
     main()
