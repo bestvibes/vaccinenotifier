@@ -9,5 +9,6 @@ while true; do
     if [ $? != 0 ]; then
         ./textme.sh ERROR: importlist broken
     fi
+    date
     sleep 900
 done
