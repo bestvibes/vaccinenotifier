@@ -7,6 +7,9 @@ import os
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from twilio.rest import Client
 
 SLEEPTIME = 3
@@ -40,6 +43,9 @@ def age_to_range(age):
     assert ret in age_ranges, ret
     return ret
 
+def get_element(driverwait, xpath):
+    return driverwait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+
 def main():
     if len(sys.argv) != 6:
         print(sys.argv)
@@ -65,20 +71,20 @@ def main():
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(10) # seconds
     driver.get(URL)
+    wait = WebDriverWait(driver, 10)
 
-    time.sleep(SLEEPTIME)
-    # driver.find_element_by_xpath("//button[@data-testid='landing-page-continue']").click()
-    driver.find_element_by_xpath('//*[@id="root"]/div/main/div[1]/div/div[2]/div[2]/button').click()
-    time.sleep(SLEEPTIME)
-    driver.find_element_by_xpath("//input[@name='q-screening-18-yr-of-age']").click()
-    driver.find_element_by_xpath("//input[@name='q-screening-health-data']").click()
-    driver.find_element_by_xpath("//input[@name='q-screening-privacy-statement']").click()
-    driver.find_element_by_xpath("//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
-    driver.find_element_by_xpath("//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
-    driver.find_element_by_xpath("//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
-    driver.find_element_by_xpath("//button[@type='submit']").click()
-    time.sleep(SLEEPTIME)
+    get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
+    get_element(wait, "//input[@name='q-screening-18-yr-of-age']").click()
+    get_element(wait, "//input[@name='q-screening-health-data']").click()
+    get_element(wait, "//input[@name='q-screening-privacy-statement']").click()
+    get_element(wait, "//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
+    get_element(wait, "//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
+    get_element(wait, "//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
+    get_element(wait, "//button[@type='submit']").click()
+
+    wait.until(EC.url_matches("(ineligible|location)"))
 
     account_sid = os.environ['TWILIO_ACCOUNT_SID']
     auth_token = os.environ['TWILIO_AUTH_TOKEN']
@@ -91,9 +97,7 @@ def main():
     elif 'location' in driver.current_url:
         print(f"ELIGIBLE for age={age} county={county} industry={industry}")
 
-        driver.find_element_by_xpath("//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
-        # driver.find_element_by_xpath("//*[@id='root']/div/main/div/div[3]/button[1]").click()
-        time.sleep(SLEEPTIME)
+        get_element(wait, "//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
 
         if 'No appointments are available' in driver.page_source:
             print("APPOINTMENTS NOT AVAILABLE!")
