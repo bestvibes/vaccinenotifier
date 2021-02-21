@@ -46,6 +46,9 @@ def age_to_range(age):
 def get_element(driverwait, xpath):
     return driverwait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
 
+def get_elements(driverwait, xpath):
+    return driverwait.until(EC.presence_of_all_elements_located(((By.XPATH, xpath))))
+
 def main():
     if len(sys.argv) != 6:
         print(sys.argv)
@@ -72,7 +75,7 @@ def main():
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
         driver = webdriver.Chrome(options=options)
-        driver.implicitly_wait(10) # seconds
+        driver.implicitly_wait(SLEEPTIME) # seconds
         driver.get(URL)
         wait = WebDriverWait(driver, 10)
 
@@ -110,14 +113,41 @@ def main():
                 # )
                 # print(recipient, message.sid)
             else:
-                print("APPOINTMENTS AVAILABLE!")
-                for recipient in recipients:
-                    message = tclient.messages.create(
-                        body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
-                        from_=fromnumber,
-                        to=recipient
-                    )
-                    print(recipient, message.sid)
+                apptfound = False
+                numlocations = len(get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]"))
+                for i in range(numlocations):
+                    location = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")[i]
+                    location.click()
+                    for _ in range(3): # up to 3 months ahead
+                        available_dates = driver.find_elements_by_xpath("//td[@role='button' and @aria-disabled='false']")
+                        for date in available_dates:
+                            while(not date.is_displayed()):
+                                time.sleep(0.1)
+                            date.click()
+                            hasappts = get_elements(wait, "//*[matches(text(), '[1-9]\d* appointments')]")
+                            if len(hasappts) > 0:
+                                apptfound = True
+                                break
+                        if not apptfound:
+                            get_element(wait, "//button[@type='button' and @class='calendar__next']").click()
+                        else:
+                            break
+                    if not apptfound:
+                        get_element(wait, "//a[@data-testid='appointment-select-change-location']").click()
+                    else:
+                        break
+
+                if apptfound:
+                    print("APPOINTMENTS AVAILABLE!")
+                    for recipient in recipients:
+                        message = tclient.messages.create(
+                            body=f"Appointments available for {age} in {industry} at {county},{zipcode}. Current time is {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
+                            from_=fromnumber,
+                            to=recipient
+                        )
+                        print(recipient, message.sid)
+                else:
+                    print("APPOINTMENTS NOT AVAILABLE!")
         else:
             print("IDK WHERE I AM:", driver.current_url)
             message = tclient.messages.create(
