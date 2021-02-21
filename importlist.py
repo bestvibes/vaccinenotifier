@@ -37,14 +37,16 @@ def main():
     if not values:
         print('No data found.')
     else:
+        values = values[0:1] + sorted(values[1:], key=lambda v: v[0]) # sort by timestamp
+        # TODO: add unsubscription logic
         for i,row in enumerate(values):
-            assert len(row) == 7
+            assert len(row) == 7, row
             if i > 0:
-                row[5] = "+1"+row[5]
+                row[6] = "+1"+row[6]
             print(','.join(row))
         print(f'Found {len(values)-1} rows. Exporting...')
         with open('sheets.csv', 'w+') as f:
-            f.write('\n'.join(map(lambda x: ','.join(x[1:-1]), filter(lambda v: "Added" in v, values[1:])))+'\n')
+            f.write('\n'.join(map(lambda x: ','.join(x[2:]), filter(lambda v: "Subscribe" in v, values[1:])))+'\n')
 
 if __name__ == '__main__':
     main()
