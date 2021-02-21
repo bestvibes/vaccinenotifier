@@ -3,9 +3,14 @@ source env.sh
 
 set -xuo pipefail
 
+if [ $# -eq 0 ]; then
+    echo "specify input data!"
+    exit 1
+fi
+
 . ./venv/bin/activate
 while true; do
-    python3 processlist.py custom.csv sheets.csv
+    python3 processlist.py $@
     texted=0
     while IFS=, read -r age ind county zip num; do
         python3 scraper.py "$age" "$ind" "$county" "$zip" "$num"
