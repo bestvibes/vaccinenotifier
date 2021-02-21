@@ -15,7 +15,12 @@ CHROMEDRIVER = '/Users/vaibhavaggarwal/projects/vaccinenotifier/chromedriver'
 def get_age_ranges():
     return ["Under 16", "16 - 49", "50-64", "65 - 74", "75 and older"]
 def get_industries():
-    return ["Financial services", "Education and childcare", "Communications and IT", "65 - 74", "75 and older"]
+    return ["Chemical and hazardous materials", "Communications and IT", "Critical manufacturing", "Defense",
+            "Education and childcare", "Emergency services", "Energy", "Financial services",
+            "Food and Agriculture", "Government operations / community based essential functions", "Healthcare Worker",
+            "Industrial, commercial, residential, and sheltering facilities and services",
+            "Retired", "Transportation and logistics", "Unemployed", "Water and wastewater",
+            "Other"]
 def age_to_range(age):
     age_ranges = get_age_ranges()
     if isinstance(age, str) and age in age_ranges:
