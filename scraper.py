@@ -84,6 +84,7 @@ def main():
     auth_token = os.environ['TWILIO_AUTH_TOKEN']
     fromnumber = os.environ['TWILIO_FROM_NUMBER']
     maintainernum = os.environ['MAINTAINER_NUM']
+    signuplink = os.environ['SIGNUP_LINK']
     tclient = Client(account_sid, auth_token)
     if 'ineligible' in driver.current_url:
         print(f"INELIGIBLE for age={age}  county={county} industry={industry}")
@@ -98,7 +99,7 @@ def main():
             print("APPOINTMENTS NOT AVAILABLE!")
             # for recipient in recipients:
             # message = tclient.messages.create(
-            # body=f"Appointments not available for {age} in {industry} at {zipcode} at {currtime}. {URL}",
+            # body=f"Appointments not available for {age} in {industry} at {zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
             # from_=fromnumber,
             # to=recipient
             # )
@@ -107,7 +108,7 @@ def main():
             print("APPOINTMENTS AVAILABLE!")
             for recipient in recipients:
                 message = tclient.messages.create(
-                    body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}",
+                    body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
                     from_=fromnumber,
                     to=recipient
                 )
