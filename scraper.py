@@ -66,66 +66,67 @@ def main():
 
     age = age_to_range(age)
 
-    print(f"Checking for age={age} ind={industry} county={county} recipients={recipients} zip={zipcode} at {currtime}")
-    URL = 'https://myturn.ca.gov'
-    options = webdriver.ChromeOptions()
-    options.add_argument('headless')
-    driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(10) # seconds
-    driver.get(URL)
-    wait = WebDriverWait(driver, 10)
+    try:
+        print(f"Checking for age={age} ind={industry} county={county} recipients={recipients} zip={zipcode} at {currtime}")
+        URL = 'https://myturn.ca.gov'
+        options = webdriver.ChromeOptions()
+        options.add_argument('headless')
+        driver = webdriver.Chrome(options=options)
+        driver.implicitly_wait(10) # seconds
+        driver.get(URL)
+        wait = WebDriverWait(driver, 10)
 
-    get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
-    get_element(wait, "//input[@name='q-screening-18-yr-of-age']").click()
-    get_element(wait, "//input[@name='q-screening-health-data']").click()
-    get_element(wait, "//input[@name='q-screening-privacy-statement']").click()
-    get_element(wait, "//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
-    get_element(wait, "//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
-    get_element(wait, "//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
-    get_element(wait, "//button[@type='submit']").click()
+        get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
+        get_element(wait, "//input[@name='q-screening-18-yr-of-age']").click()
+        get_element(wait, "//input[@name='q-screening-health-data']").click()
+        get_element(wait, "//input[@name='q-screening-privacy-statement']").click()
+        get_element(wait, "//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
+        get_element(wait, "//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
+        get_element(wait, "//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
+        get_element(wait, "//button[@type='submit']").click()
 
-    wait.until(EC.url_matches("(ineligible|location)"))
+        wait.until(EC.url_matches("(ineligible|location)"))
 
-    account_sid = os.environ['TWILIO_ACCOUNT_SID']
-    auth_token = os.environ['TWILIO_AUTH_TOKEN']
-    fromnumber = os.environ['TWILIO_FROM_NUMBER']
-    maintainernum = os.environ['MAINTAINER_NUM']
-    signuplink = os.environ['SIGNUP_LINK']
-    tclient = Client(account_sid, auth_token)
-    if 'ineligible' in driver.current_url:
-        print(f"INELIGIBLE for age={age}  county={county} industry={industry}")
-    elif 'location' in driver.current_url:
-        print(f"ELIGIBLE for age={age} county={county} industry={industry}")
+        account_sid = os.environ['TWILIO_ACCOUNT_SID']
+        auth_token = os.environ['TWILIO_AUTH_TOKEN']
+        fromnumber = os.environ['TWILIO_FROM_NUMBER']
+        maintainernum = os.environ['MAINTAINER_NUM']
+        signuplink = os.environ['SIGNUP_LINK']
+        tclient = Client(account_sid, auth_token)
+        if 'ineligible' in driver.current_url:
+            print(f"INELIGIBLE for age={age}  county={county} industry={industry}")
+        elif 'location' in driver.current_url:
+            print(f"ELIGIBLE for age={age} county={county} industry={industry}")
 
-        get_element(wait, "//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
+            get_element(wait, "//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
 
-        if 'No appointments are available' in driver.page_source:
-            print("APPOINTMENTS NOT AVAILABLE!")
-            # for recipient in recipients:
-            # message = tclient.messages.create(
-            # body=f"Appointments not available for {age} in {industry} at {zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
-            # from_=fromnumber,
-            # to=recipient
-            # )
-            # print(recipient, message.sid)
+            if 'No appointments are available' in driver.page_source:
+                print("APPOINTMENTS NOT AVAILABLE!")
+                # for recipient in recipients:
+                # message = tclient.messages.create(
+                # body=f"Appointments not available for {age} in {industry} at {zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
+                # from_=fromnumber,
+                # to=recipient
+                # )
+                # print(recipient, message.sid)
+            else:
+                print("APPOINTMENTS AVAILABLE!")
+                for recipient in recipients:
+                    message = tclient.messages.create(
+                        body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
+                        from_=fromnumber,
+                        to=recipient
+                    )
+                    print(recipient, message.sid)
         else:
-            print("APPOINTMENTS AVAILABLE!")
-            for recipient in recipients:
-                message = tclient.messages.create(
-                    body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
-                    from_=fromnumber,
-                    to=recipient
-                )
-                print(recipient, message.sid)
-    else:
-        print("IDK WHERE I AM:", driver.current_url)
-        message = tclient.messages.create(
-            body=f"Notifier failed for {age} in {industry} at {county},{zipcode} at {currtime}!",
-            from_=fromnumber,
-            to=maintainernum
-        )
-
-    driver.close()
+            print("IDK WHERE I AM:", driver.current_url)
+            message = tclient.messages.create(
+                body=f"Notifier failed for {age} in {industry} at {county},{zipcode} at {currtime}!",
+                from_=fromnumber,
+                to=maintainernum
+            )
+    finally:
+        driver.close()
 
 if __name__ == "__main__":
     main()
