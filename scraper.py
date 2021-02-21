@@ -113,7 +113,7 @@ def main():
                 print("APPOINTMENTS AVAILABLE!")
                 for recipient in recipients:
                     message = tclient.messages.create(
-                        body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
+                        body=f"Appointments available for {age} in {industry} at {county},{zipcode} at {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
                         from_=fromnumber,
                         to=recipient
                     )
