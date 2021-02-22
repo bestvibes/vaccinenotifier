@@ -119,20 +119,23 @@ def main():
                     location = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")[i]
                     location.click()
                     for _ in range(3): # up to 3 months ahead
+                        WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                         available_dates = driver.find_elements_by_xpath("//td[@role='button' and @aria-disabled='false']")
                         for date in available_dates:
-                            while(not date.is_displayed()):
-                                time.sleep(0.1)
+                            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                             date.click()
-                            hasappts = get_elements(wait, "//*[matches(text(), '[1-9]\d* appointments')]")
-                            if len(hasappts) > 0:
+                            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                            hasappts = get_elements(wait, "//*[contains(text(), 'appointments available')]")
+                            if len(hasappts) > 0 and not hasappts[0].text.startswith("0 appointments"):
                                 apptfound = True
                                 break
                         if not apptfound:
+                            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                             get_element(wait, "//button[@type='button' and @class='calendar__next']").click()
                         else:
                             break
                     if not apptfound:
+                        WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                         get_element(wait, "//a[@data-testid='appointment-select-change-location']").click()
                     else:
                         break
