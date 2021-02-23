@@ -119,7 +119,7 @@ def main():
                 for i in range(numlocations):
                     location = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")[i]
                     location.click()
-                    for _ in range(3): # up to 3 months ahead
+                    for _ in range(1): # up to 1 months ahead
                         WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                         available_dates = driver.find_elements_by_xpath("//td[@role='button' and @aria-disabled='false']")
                         for date in available_dates:
