@@ -102,6 +102,7 @@ def main():
             print(f"ELIGIBLE for age={age} county={county} industry={industry}")
 
             get_element(wait, "//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
+            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
 
             if 'No appointments are available' in driver.page_source:
                 print("APPOINTMENTS NOT AVAILABLE!")
