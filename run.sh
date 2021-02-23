@@ -15,12 +15,12 @@ while true; do
     while IFS=, read -r age ind county zip num; do
         T="$(date +%s)";
         (set -x; python3 scraper.py "$age" "$ind" "$county" "$zip" "$num")
-        T="$(($(date +%s)-T))";
-        echo "Time in seconds: ${T}"
         if [ $? != 0 ] && [ $texted == 0 ]; then
             ./textme.sh ERROR: run broken for "$age" "$ind" "$county" "$zip"
             texted=1
         fi
+        T="$(($(date +%s)-T))";
+        echo "Time in seconds: ${T}"
     done < clean_list.csv
     date
     (set -x; sleep 900)
