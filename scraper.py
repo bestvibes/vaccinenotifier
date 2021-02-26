@@ -16,12 +16,12 @@ SLEEPTIME = 3
 CHROMEDRIVER = '/Users/vaibhavaggarwal/projects/vaccinenotifier/chromedriver'
 
 def get_age_ranges():
-    return ["Under 16", "16 - 49", "50-64", "65 - 74", "75 and older"]
+    return ["18 - 49", "50-64", "65 - 74", "75 and older"]
 def get_industries():
     return ["Chemical and hazardous materials", "Communications and IT", "Critical manufacturing", "Defense",
             "Education and childcare", "Emergency services", "Energy", "Financial services",
             "Food and Agriculture", "Government operations / community based essential functions", "Healthcare Worker",
-            "Industrial, commercial, residential, and sheltering facilities and services",
+            # "Industrial, commercial, residential, and sheltering facilities and services",
             "Retired", "Transportation and logistics", "Unemployed", "Water and wastewater",
             "Other"]
 def age_to_range(age):
@@ -30,16 +30,14 @@ def age_to_range(age):
         ret = age
     else:
         age = int(age)
-        if age <= 16:
+        if age <= 49:
             ret = age_ranges[0]
-        elif age <= 49:
-            ret = age_ranges[1]
         elif age <= 64:
-            ret = age_ranges[2]
+            ret = age_ranges[1]
         elif age <= 74:
-            ret = age_ranges[3]
+            ret = age_ranges[2]
         else:
-            ret = age_ranges[4]
+            ret = age_ranges[3]
     assert ret in age_ranges, ret
     return ret
 
@@ -62,6 +60,7 @@ def main():
     zipcode = sys.argv[4]
     recipients = sys.argv[5].split('|')
 
+    assert industry in get_industries(), industry
     assert county[0].isupper(), county
     assert len(zipcode) == 5
     for recipient in recipients:
