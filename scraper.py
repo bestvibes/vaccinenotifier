@@ -16,7 +16,7 @@ SLEEPTIME = 3
 CHROMEDRIVER = '/Users/vaibhavaggarwal/projects/vaccinenotifier/chromedriver'
 
 def get_age_ranges():
-    return ["18 - 49", "50-64", "65 - 74", "75 and older"]
+    return ["16 - 49", "50-64", "65 - 74", "75 and older"]
 def get_industries():
     return ["Chemical and hazardous materials", "Communications and IT", "Critical manufacturing", "Defense",
             "Education and childcare", "Emergency services", "Energy", "Financial services",
@@ -135,7 +135,7 @@ def main():
                         else:
                             break
                     if not apptfound:
-                        WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                        WebDriverWait(driver, 4).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                         get_element(wait, "//a[@data-testid='appointment-select-change-location']").click()
                     else:
                         break
