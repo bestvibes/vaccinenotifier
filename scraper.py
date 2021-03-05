@@ -71,7 +71,7 @@ def main():
     age = age_to_range(age)
 
     try:
-        print(f"Checking for age={age} ind={industry} county={county} zip={zipcode} at {currtime}\nrecipients={recipients}")
+        print(f"Checking for age={age} ind={industry} county={county} zip={zipcode} und={undcondition} at {currtime}\nrecipients={recipients}")
         URL = 'https://myturn.ca.gov'
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
@@ -99,9 +99,9 @@ def main():
         signuplink = os.environ['SIGNUP_LINK']
         tclient = Client(account_sid, auth_token)
         if 'ineligible' in driver.current_url:
-            print(f"INELIGIBLE for age={age} county={county} industry={industry}")
+            print(f"INELIGIBLE for age={age} county={county} industry={industry} und={undcondition}")
         elif 'location' in driver.current_url:
-            print(f"ELIGIBLE for age={age} county={county} industry={industry}")
+            print(f"ELIGIBLE for age={age} county={county} industry={industry} und={undcondition}")
 
             get_element(wait, "//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
             WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
@@ -157,7 +157,7 @@ def main():
         else:
             print("IDK WHERE I AM:", driver.current_url)
             message = tclient.messages.create(
-                body=f"Notifier failed for {age} in {industry} at {county},{zipcode} at {currtime}!",
+                body=f"Notifier failed for {age} in {industry} at {county},{zipcode} und={undcondition} at {currtime}!",
                 from_=fromnumber,
                 to=maintainernum
             )
