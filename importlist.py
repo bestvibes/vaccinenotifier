@@ -42,8 +42,8 @@ def main():
         subscriptions_list = []
         print(values[0])
         for row in values[1:]:
-            assert len(row) == 7, row
-            row[6] = "+1"+row[6]
+            assert len(row) == 8, row
+            row[7] = "+1"+row[7]
             assert(row[1] in ["Subscribe", "Unsubscribe"])
             if (row[1] == "Subscribe"):
                 subscriptions_list.append(row)
@@ -51,7 +51,7 @@ def main():
                 print('SUB:', ','.join(row), "newsize:", newsize)
             else:
                 origsize = len(subscriptions_list)
-                subscriptions_list = list(filter(lambda s: s[6] != row[6], subscriptions_list))
+                subscriptions_list = list(filter(lambda s: s[7] != row[7], subscriptions_list))
                 newsize = len(subscriptions_list)
                 print('UNSUB:', ','.join(row), " oldsize:", origsize, "newsize:", newsize)
         print(f'Found {len(subscriptions_list)} subscriptions. Exporting...')

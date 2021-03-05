@@ -17,12 +17,13 @@ lines = [l.replace('"',"").strip().split(',') for l in lines if '#' not in l and
 lines = [[d.strip() for d in l] for l in lines]
 industries = get_industries()
 for l in lines:
-    assert len(l) == 5, l
+    assert len(l) == 6, l
     assert l[1].replace('"', "") in industries, l
     assert l[2][0].isupper(), l
     assert len(l[3]) == 5, l
-    assert len(l[4]) >= 12, l
-    for num in l[4].split('|'):
+    assert l[4] in ["Yes", "No"], l
+    assert len(l[5]) >= 12, l
+    for num in l[5].split('|'):
         assert num[0] == '+', num
         assert num[1] == '1', num
     l[0] = age_to_range(l[0])

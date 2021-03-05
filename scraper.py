@@ -48,9 +48,9 @@ def get_elements(driverwait, xpath):
     return driverwait.until(EC.presence_of_all_elements_located(((By.XPATH, xpath))))
 
 def main():
-    if len(sys.argv) != 6:
+    if len(sys.argv) != 7:
         print(sys.argv)
-        print(f"Usage: {sys.argv[0]} age industry county zipcode recipient")
+        print(f"Usage: {sys.argv[0]} age industry county zipcode undcond recipient")
         sys.exit(1)
 
     currtime = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
@@ -58,11 +58,13 @@ def main():
     industry = sys.argv[2]
     county = sys.argv[3]
     zipcode = sys.argv[4]
-    recipients = sys.argv[5].split('|')
+    undcondition = sys.argv[5]
+    recipients = sys.argv[6].split('|')
 
     assert industry in get_industries(), industry
     assert county[0].isupper(), county
     assert len(zipcode) == 5
+    assert undcondition in ["Yes", "No"]
     for recipient in recipients:
         assert(recipient[0] == '+' and recipient[1] == '1' and len(recipient)==12)
 
@@ -83,6 +85,7 @@ def main():
         get_element(wait, "//input[@name='q-screening-health-data']").click()
         get_element(wait, "//input[@name='q-screening-privacy-statement']").click()
         get_element(wait, "//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
+        get_element(wait, "//input[@name='q-screening-underlying-health-condition' and @value='{}']".format(undcondition)).click()
         get_element(wait, "//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
         get_element(wait, "//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
         get_element(wait, "//button[@type='submit']").click()
