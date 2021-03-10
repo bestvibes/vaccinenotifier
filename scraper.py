@@ -117,7 +117,7 @@ def main():
                 # print(recipient, message.sid)
             else:
                 apptfound = False
-                numlocations = len(get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]"))
+                numlocations = len(driver.find_elements_by_xpath("//button[@type='button' and contains(text(),'See availability')]"))
                 for i in range(numlocations):
                     location = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")[i]
                     location.click()
