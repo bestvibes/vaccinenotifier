@@ -2,6 +2,8 @@
 
 import pickle
 import os.path
+import datetime
+
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -40,7 +42,7 @@ def main():
         print('No data found.')
     else:
         # first row is header
-        values = values[0:1] + sorted(values[1:], key=lambda v: v[0]) # sort by timestamp
+        values = values[0:1] + sorted(values[1:], key=lambda v: datetime.datetime.strptime(v[0], '%m/%d/%Y %H:%M:%S')) # sort by timestamp
         subscriptions_list = []
         print(values[0])
         for row in values[1:]:
