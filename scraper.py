@@ -89,6 +89,7 @@ def main():
         get_element(wait, "//input[@name='q-screening-privacy-statement']").click()
         get_element(wait, "//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
         get_element(wait, "//input[@name='q-screening-underlying-health-condition' and @value='{}']".format(undcondition)).click()
+        get_element(wait, "//input[@name='q-screening-disability' and @value='{}']".format("No")).click()
         get_element(wait, "//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
         get_element(wait, "//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
         get_element(wait, "//button[@type='submit']").click()
