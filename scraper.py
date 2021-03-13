@@ -10,6 +10,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 from twilio.rest import Client
 
 SLEEPTIME = 3
@@ -164,6 +165,10 @@ def main():
                 to=maintainernum
             )
             print(maintainernum, message.sid)
+    except TimeoutException as e:
+        if (driver):
+            print(driver.page_source)
+        raise e
     finally:
         driver.close()
 
