@@ -22,7 +22,12 @@ for l in lines:
     assert l[Params.SCRAPER_INDUSTRY_INDEX].replace('"', "") in industries, l
     assert l[Params.SCRAPER_COUNTY_INDEX][0].isupper(), l
     assert len(l[Params.SCRAPER_ZIPCODE_INDEX]) == 5, l
+    if (l[Params.SCRAPER_UNDCONDITION_INDEX] == ""):
+        l[Params.SCRAPER_UNDCONDITION_INDEX] = "No"
     assert l[Params.SCRAPER_UNDCONDITION_INDEX] in ["Yes", "No"], l
+    if (l[Params.SCRAPER_DISABILITY_INDEX] == ""):
+        l[Params.SCRAPER_DISABILITY_INDEX] = "No"
+    assert l[Params.SCRAPER_DISABILITY_INDEX] in ["Yes", "No"], l
     assert len(l[Params.SCRAPER_PHONE_INDEX]) >= 12, l
     for num in l[Params.SCRAPER_PHONE_INDEX].split('|'):
         assert num[0] == '+', num
