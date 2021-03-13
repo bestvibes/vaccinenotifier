@@ -13,6 +13,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from twilio.rest import Client
 
+class Params:
+    SPREADSHEET_NUM_COLS = 8
+    SPREADSHEET_SUB_INDEX = 1
+    SPREADSHEET_PHONE_INDEX = SPREADSHEET_NUM_COLS-1
+
+    SCRAPER_NUM_ARGS = 6 # no sub/unsub or timestamp
+    SCRAPER_AGE_INDEX = 0
+    SCRAPER_INDUSTRY_INDEX = 1
+    SCRAPER_COUNTY_INDEX = 2
+    SCRAPER_ZIPCODE_INDEX = 3
+    SCRAPER_UNDCONDITION_INDEX = 4
+    SCRAPER_PHONE_INDEX = 5
+
 SLEEPTIME = 3
 CHROMEDRIVER = '/Users/vaibhavaggarwal/projects/vaccinenotifier/chromedriver'
 
@@ -49,18 +62,18 @@ def get_elements(driverwait, xpath):
     return driverwait.until(EC.presence_of_all_elements_located(((By.XPATH, xpath))))
 
 def main():
-    if len(sys.argv) != 7:
+    if len(sys.argv) != Params.SCRAPER_NUM_ARGS+1:
         print(sys.argv)
         print(f"Usage: {sys.argv[0]} age industry county zipcode undcond recipient")
         sys.exit(1)
 
     currtime = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
-    age = sys.argv[1]
-    industry = sys.argv[2]
-    county = sys.argv[3]
-    zipcode = sys.argv[4]
-    undcondition = sys.argv[5]
-    recipients = sys.argv[6].split('|')
+    age = sys.argv[Params.SCRAPER_AGE_INDEX+1]
+    industry = sys.argv[Params.SCRAPER_INDUSTRY_INDEX+1]
+    county = sys.argv[Params.SCRAPER_COUNTY_INDEX+1]
+    zipcode = sys.argv[Params.SCRAPER_ZIPCODE_INDEX+1]
+    undcondition = sys.argv[Params.SCRAPER_UNDCONDITION_INDEX+1]
+    recipients = sys.argv[Params.SCRAPER_PHONE_INDEX+1].split('|')
 
     assert industry in get_industries(), industry
     assert county[0].isupper(), county

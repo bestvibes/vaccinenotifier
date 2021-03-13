@@ -6,6 +6,8 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
+from scraper import Params
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
@@ -42,16 +44,16 @@ def main():
         subscriptions_list = []
         print(values[0])
         for row in values[1:]:
-            assert len(row) == 8, row
-            row[7] = "+1"+row[7]
-            assert(row[1] in ["Subscribe", "Unsubscribe"])
-            if (row[1] == "Subscribe"):
+            assert len(row) == Params.SPREADSHEET_NUM_COLS, row
+            row[Params.SPREADSHEET_PHONE_INDEX] = "+1"+row[Params.SPREADSHEET_PHONE_INDEX]
+            assert(row[Params.SPREADSHEET_SUB_INDEX] in ["Subscribe", "Unsubscribe"])
+            if (row[Params.SPREADSHEET_SUB_INDEX] == "Subscribe"):
                 subscriptions_list.append(row)
                 newsize = len(subscriptions_list)
                 print('SUB:', ','.join(row), "newsize:", newsize)
             else:
                 origsize = len(subscriptions_list)
-                subscriptions_list = list(filter(lambda s: s[7] != row[7], subscriptions_list))
+                subscriptions_list = list(filter(lambda s: s[Params.SPREADSHEET_PHONE_INDEX] != row[Params.SPREADSHEET_PHONE_INDEX], subscriptions_list))
                 newsize = len(subscriptions_list)
                 print('UNSUB:', ','.join(row), " oldsize:", origsize, "newsize:", newsize)
         print(f'Found {len(subscriptions_list)} subscriptions. Exporting...')

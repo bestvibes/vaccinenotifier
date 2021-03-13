@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from scraper import age_to_range, get_industries
+from scraper import age_to_range, get_industries, Params
 import itertools
 
 if len(sys.argv) == 1:
@@ -17,16 +17,16 @@ lines = [l.replace('"',"").strip().split(',') for l in lines if '#' not in l and
 lines = [[d.strip() for d in l] for l in lines]
 industries = get_industries()
 for l in lines:
-    assert len(l) == 6, l
-    assert l[1].replace('"', "") in industries, l
-    assert l[2][0].isupper(), l
-    assert len(l[3]) == 5, l
-    assert l[4] in ["Yes", "No"], l
-    assert len(l[5]) >= 12, l
-    for num in l[5].split('|'):
+    assert len(l) == Params.SCRAPER_NUM_ARGS, l
+    l[Params.SCRAPER_AGE_INDEX] = age_to_range(l[Params.SCRAPER_AGE_INDEX])
+    assert l[Params.SCRAPER_INDUSTRY_INDEX].replace('"', "") in industries, l
+    assert l[Params.SCRAPER_COUNTY_INDEX][0].isupper(), l
+    assert len(l[Params.SCRAPER_ZIPCODE_INDEX]) == 5, l
+    assert l[Params.SCRAPER_UNDCONDITION_INDEX] in ["Yes", "No"], l
+    assert len(l[Params.SCRAPER_PHONE_INDEX]) >= 12, l
+    for num in l[Params.SCRAPER_PHONE_INDEX].split('|'):
         assert num[0] == '+', num
         assert num[1] == '1', num
-    l[0] = age_to_range(l[0])
 
 grouped_lines = []
 for k,g in itertools.groupby(sorted(lines), key=lambda l: l[:-1]):
