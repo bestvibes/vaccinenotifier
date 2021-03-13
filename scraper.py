@@ -16,7 +16,7 @@ from twilio.rest import Client
 class Params:
     SPREADSHEET_NUM_COLS = 10
     SPREADSHEET_SUB_INDEX = 1
-    SPREADSHEET_CONSENT_INDEX = 1
+    SPREADSHEET_CONSENT_INDEX = 2
     SPREADSHEET_PHONE_INDEX = SPREADSHEET_NUM_COLS-1
 
     SCRAPER_NUM_ARGS = 7 # no sub/unsub or timestamp
