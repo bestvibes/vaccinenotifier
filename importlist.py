@@ -46,6 +46,7 @@ def main():
         for row in values[1:]:
             assert len(row) == Params.SPREADSHEET_NUM_COLS, row
             row[Params.SPREADSHEET_PHONE_INDEX] = "+1"+row[Params.SPREADSHEET_PHONE_INDEX]
+            assert(row[Params.SPREADSHEET_CONSENT_INDEX] == "Yes")
             assert(row[Params.SPREADSHEET_SUB_INDEX] in ["Subscribe", "Unsubscribe"])
             if (row[Params.SPREADSHEET_SUB_INDEX] == "Subscribe"):
                 subscriptions_list.append(row)
@@ -58,7 +59,7 @@ def main():
                 print('UNSUB:', ','.join(row), " oldsize:", origsize, "newsize:", newsize)
         print(f'Found {len(subscriptions_list)} subscriptions. Exporting...')
         with open('sheets.csv', 'w+') as f:
-            f.write('\n'.join(map(lambda x: ','.join(x[2:]), subscriptions_list))+'\n')
+            f.write('\n'.join(map(lambda x: ','.join(x[3:]), subscriptions_list))+'\n')
 
 if __name__ == '__main__':
     main()
