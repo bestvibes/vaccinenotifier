@@ -48,9 +48,9 @@ def main():
         for row in values[1:]:
             assert len(row) == Params.SPREADSHEET_NUM_COLS, row
             row[Params.SPREADSHEET_PHONE_INDEX] = "+1"+row[Params.SPREADSHEET_PHONE_INDEX]
-            assert(row[Params.SPREADSHEET_CONSENT_INDEX] == "Yes")
             assert(row[Params.SPREADSHEET_SUB_INDEX] in ["Subscribe", "Unsubscribe"])
             if (row[Params.SPREADSHEET_SUB_INDEX] == "Subscribe"):
+                assert(row[Params.SPREADSHEET_CONSENT_INDEX] == "Yes")
                 subscriptions_list.append(row)
                 newsize = len(subscriptions_list)
                 print('SUB:', ','.join(row), "newsize:", newsize)
