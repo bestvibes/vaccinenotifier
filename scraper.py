@@ -12,6 +12,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from twilio.rest import Client
+from fake_useragent import UserAgent
 
 class Params:
     SPREADSHEET_NUM_COLS = 10
@@ -92,7 +93,9 @@ def main():
         URL = 'https://myturn.ca.gov'
         options = webdriver.ChromeOptions()
         options.add_argument('headless')
-        user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+        # user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+        ua = UserAgent()
+        user_agent = ua.random
         options.add_argument(f'user-agent={user_agent}')
         driver = webdriver.Chrome(options=options)
         driver.implicitly_wait(SLEEPTIME) # seconds
