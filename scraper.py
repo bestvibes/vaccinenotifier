@@ -102,7 +102,18 @@ def main():
         driver.get(URL)
         wait = WebDriverWait(driver, 10)
 
-        get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
+        count = 0
+        while count <= 3:
+            try:
+                get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
+                break
+            except Exception as e:
+                if count == 3:
+                    print("timed out on landing page, failed thrice")
+                    raise e
+                else:
+                    print("timed out on landing page, retrying")
+                    count += 1
         get_element(wait, "//input[@name='q-screening-18-yr-of-age']").click()
         get_element(wait, "//input[@name='q-screening-health-data']").click()
         get_element(wait, "//input[@name='q-screening-accuracy-attestation']").click()
