@@ -31,7 +31,7 @@ class Params:
     SCRAPER_PHONE_INDEX = 6
 
 SLEEPTIME = 3
-CHROMEDRIVER = '/Users/vaibhavaggarwal/projects/vaccinenotifier/chromedriver'
+CHROMEDRIVER = os.environ['CHROMEDRIVER_PATH']
 
 def get_age_ranges():
     return ["16 - 49", "50-64", "65 - 74", "75 and older"]
