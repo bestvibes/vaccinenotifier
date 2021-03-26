@@ -191,6 +191,7 @@ def main():
             print(maintainernum, message.sid)
     except TimeoutException as e:
         if (driver):
+            print(driver.current_url)
             print(driver.page_source)
         raise e
     finally:
