@@ -16,6 +16,12 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 SPREADSHEET_ID = os.environ["GSHEETS_SPREADSHEET_ID"]
 RANGE_NAME = 'Form Responses 1'
 
+def spreadsheet_to_scraper(row):
+    scraper_row = [0]*Params.SCRAPER_NUM_ARGS
+    for spreadsheet_i, scraper_i in Params.SPREADSHEET_TO_SCRAPER_MAP.items():
+        scraper_row[scraper_i] = row[spreadsheet_i]
+    return ','.join(scraper_row)
+
 def main():
     creds = None
     if os.path.exists('token.pickle'):
@@ -61,7 +67,7 @@ def main():
                 print('UNSUB:', ','.join(row), " oldsize:", origsize, "newsize:", newsize)
         print(f'Found {len(subscriptions_list)} subscriptions. Exporting...')
         with open('sheets.csv', 'w+') as f:
-            f.write('\n'.join(map(lambda x: ','.join(x[3:]), subscriptions_list))+'\n')
+            f.write('\n'.join(map(spreadsheet_to_scraper, subscriptions_list))+'\n')
 
 if __name__ == '__main__':
     main()
