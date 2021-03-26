@@ -4,6 +4,7 @@ import sys
 import datetime
 import time
 import os
+import random
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -95,25 +96,16 @@ def main():
         options.add_argument('headless')
         # user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
         ua = UserAgent()
-        user_agent = ua.ie
+        agents = [ua.ie, ua.opera, ua.safari, ua.firefox]
+        user_agent = agents[random.randint(0, len(agents)-1)]
+        print("user-agent:", user_agent)
         options.add_argument(f'user-agent={user_agent}')
         driver = webdriver.Chrome(options=options)
         driver.implicitly_wait(SLEEPTIME) # seconds
         driver.get(URL)
         wait = WebDriverWait(driver, 10)
 
-        count = 0
-        while count <= 3:
-            try:
-                get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
-                break
-            except Exception as e:
-                if count == 3:
-                    print("timed out on landing page, failed thrice")
-                    raise e
-                else:
-                    print("timed out on landing page, retrying")
-                    count += 1
+        get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
         get_element(wait, "//input[@name='q-screening-18-yr-of-age']").click()
         get_element(wait, "//input[@name='q-screening-health-data']").click()
         get_element(wait, "//input[@name='q-screening-accuracy-attestation']").click()
