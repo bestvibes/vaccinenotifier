@@ -93,7 +93,8 @@ def main():
         print(f"Checking for age={age} ind={industry} county={county} zip={zipcode} und={undcondition} dis={disability} at {currtime}\nrecipients={recipients}")
         URL = 'https://myturn.ca.gov'
         options = webdriver.ChromeOptions()
-        options.add_argument('headless')
+        if 'HEAD' not in os.environ:
+            options.add_argument('headless')
         # user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
         ua = UserAgent()
         agents = [ua.ie, ua.opera, ua.safari]
