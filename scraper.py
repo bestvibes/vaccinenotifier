@@ -22,27 +22,27 @@ class Params:
     SPREADSHEET_AGE_INDEX = 3
     SPREADSHEET_INDUSTRY_INDEX = 4
     SPREADSHEET_COUNTY_INDEX = 5
-    SPREADSHEET_ZIPCODE_INDEX = 6
-    SPREADSHEET_UNDCONDITION_INDEX = 7
-    SPREADSHEET_DISABILITY_INDEX = 8
+    SPREADSHEET_UNDCONDITION_INDEX = 6
+    SPREADSHEET_DISABILITY_INDEX = 7
+    SPREADSHEET_ZIPCODE_INDEX = 8
     SPREADSHEET_PHONE_INDEX = 9
 
     SCRAPER_NUM_ARGS = 7 # no sub/unsub or timestamp
     SCRAPER_AGE_INDEX = 0
     SCRAPER_INDUSTRY_INDEX = 1
     SCRAPER_COUNTY_INDEX = 2
-    SCRAPER_ZIPCODE_INDEX = 3
-    SCRAPER_UNDCONDITION_INDEX = 4
-    SCRAPER_DISABILITY_INDEX = 5
+    SCRAPER_UNDCONDITION_INDEX = 3
+    SCRAPER_DISABILITY_INDEX = 4
+    SCRAPER_ZIPCODE_INDEX = 5
     SCRAPER_PHONE_INDEX = 6
 
     SPREADSHEET_TO_SCRAPER_MAP = {
         SPREADSHEET_AGE_INDEX : SCRAPER_AGE_INDEX,
         SPREADSHEET_INDUSTRY_INDEX : SCRAPER_INDUSTRY_INDEX,
         SPREADSHEET_COUNTY_INDEX : SCRAPER_COUNTY_INDEX,
-        SPREADSHEET_ZIPCODE_INDEX : SCRAPER_ZIPCODE_INDEX,
         SPREADSHEET_UNDCONDITION_INDEX : SCRAPER_UNDCONDITION_INDEX,
         SPREADSHEET_DISABILITY_INDEX : SCRAPER_DISABILITY_INDEX,
+        SPREADSHEET_ZIPCODE_INDEX : SCRAPER_ZIPCODE_INDEX,
         SPREADSHEET_PHONE_INDEX : SCRAPER_PHONE_INDEX
     }
 
@@ -84,29 +84,34 @@ def get_elements(driverwait, xpath):
 def main():
     if len(sys.argv) != Params.SCRAPER_NUM_ARGS+1:
         print(sys.argv)
-        print(f"Usage: {sys.argv[0]} age industry county zipcode undcond recipient")
+        print(f"Usage: {sys.argv[0]} age industry county undcond disability zipcodes recipientgroups")
         sys.exit(1)
 
     currtime = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
     age = sys.argv[Params.SCRAPER_AGE_INDEX+1]
     industry = sys.argv[Params.SCRAPER_INDUSTRY_INDEX+1]
     county = sys.argv[Params.SCRAPER_COUNTY_INDEX+1]
-    zipcode = sys.argv[Params.SCRAPER_ZIPCODE_INDEX+1]
     undcondition = sys.argv[Params.SCRAPER_UNDCONDITION_INDEX+1]
     disability = sys.argv[Params.SCRAPER_DISABILITY_INDEX+1]
-    recipients = sys.argv[Params.SCRAPER_PHONE_INDEX+1].split('|')
+    zipcodes = sys.argv[Params.SCRAPER_ZIPCODE_INDEX+1].split('|')
+    recipientgroups = sys.argv[Params.SCRAPER_PHONE_INDEX+1].split('||')
+
+    recipientgroups = list(map(lambda x: x.split("|"), recipientgroups))
 
     assert industry in get_industries(), industry
     assert county[0].isupper(), county
-    assert len(zipcode) == 5
     assert undcondition in ["Yes", "No"]
-    for recipient in recipients:
-        assert(recipient[0] == '+' and recipient[1] == '1' and len(recipient)==12)
+    assert disability in ["Yes", "No"]
+    assert len(zipcodes)==len(recipientgroups)
+    assert all(map(lambda z: len(z) == 5, zipcodes))
+    for recipientgroup in recipientgroups:
+        for recipient in recipientgroup:
+            assert(recipient[0] == '+' and recipient[1] == '1' and len(recipient)==12)
 
     age = age_to_range(age)
 
     try:
-        print(f"Checking for age={age} ind={industry} county={county} zip={zipcode} und={undcondition} dis={disability} at {currtime}\nrecipients={recipients}")
+        print(f"Checking for age={age} ind={industry} county={county} zip={zipcodes} und={undcondition} dis={disability} at {currtime}\nrecipients={recipientgroups}")
         URL = 'https://myturn.ca.gov'
         options = webdriver.ChromeOptions()
         if 'HEAD' not in os.environ:
@@ -147,61 +152,61 @@ def main():
         elif 'location' in driver.current_url:
             print(f"ELIGIBLE for age={age} county={county} industry={industry} und={undcondition} dis={disability}")
 
-            get_element(wait, "//input[@id='location-search-input']").send_keys(zipcode+Keys.RETURN)
-            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+            for zipcode, recipientgroup in zip(zipcodes, recipientgroups):
+                print(f"CHECKING APPTS for zipcode={zipcode} recipients={recipientgroup}")
+                zipcode_input = get_element(wait, "//input[@id='location-search-input']")
+                zipcode_input.clear()
+                zipcode_input.send_keys(zipcode+Keys.RETURN)
+                WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
 
-            if 'No appointments are available' in driver.page_source:
-                print("APPOINTMENTS NOT AVAILABLE!")
-                # for recipient in recipients:
-                # message = tclient.messages.create(
-                # body=f"Appointments not available for {age} in {industry} at {zipcode} at {currtime}. {URL}. Unsubscribe at {signuplink}.",
-                # from_=fromnumber,
-                # to=recipient
-                # )
-                # print(recipient, message.sid)
-            else:
-                apptfound = False
-                numlocations = len(driver.find_elements_by_xpath("//button[@type='button' and contains(text(),'See availability')]"))
-                for i in range(numlocations):
-                    location = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")[i]
-                    location.click()
-                    for _ in range(2): # up to 1 months ahead
-                        WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
-                        available_dates = driver.find_elements_by_xpath("//td[@role='button' and @aria-disabled='false']")
-                        for date in available_dates:
-                            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
-                            date.click()
-                            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
-                            hasappts = get_elements(wait, "//*[contains(text(), 'appointments available')]")
-                            if len(hasappts) > 0 and not hasappts[0].text.startswith("0 appointments"):
-                                apptfound = True
-                                break
-                        if not apptfound:
-                            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
-                            get_element(wait, "//button[@type='button' and @class='calendar__next']").click()
-                        else:
-                            break
-                    if not apptfound:
-                        WebDriverWait(driver, 4).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
-                        get_element(wait, "//a[@data-testid='appointment-select-change-location']").click()
-                    else:
-                        break
-
-                if apptfound:
-                    print("APPOINTMENTS AVAILABLE!")
-                    for recipient in recipients:
-                        message = tclient.messages.create(
-                            body=f"Appointments available for {age} in {industry} at {county},{zipcode}. Current time is {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
-                            from_=fromnumber,
-                            to=recipient
-                        )
-                        print(recipient, message.sid)
+                if 'No appointments are available' in driver.page_source:
+                    print(f"APPOINTMENTS NOT AVAILABLE for zipcode={zipcode} recipients={recipientgroup}!")
                 else:
-                    print("APPOINTMENTS NOT AVAILABLE!")
+                    apptfound = False
+                    numlocations = len(driver.find_elements_by_xpath("//button[@type='button' and contains(text(),'See availability')]"))
+                    for i in range(numlocations):
+                        location = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")[i]
+                        location.click()
+                        for _ in range(2): # up to 1 months ahead
+                            WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                            available_dates = driver.find_elements_by_xpath("//td[@role='button' and @aria-disabled='false']")
+                            for date in available_dates:
+                                WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                                date.click()
+                                WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                                hasappts = get_elements(wait, "//*[contains(text(), 'appointments available')]")
+                                if len(hasappts) > 0 and not hasappts[0].text.startswith("0 appointments"):
+                                    apptfound = True
+                                    break
+                            if not apptfound:
+                                WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                                get_element(wait, "//button[@type='button' and @class='calendar__next']").click()
+                            else:
+                                break
+                        if (zipcode != zipcodes[-1]): # so we can check other zipcodes later
+                            WebDriverWait(driver, 4).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                            get_element(wait, "//a[@data-testid='appointment-select-change-location']").click()
+                        if apptfound:
+                            break
+                    if apptfound:
+                        print(f"APPOINTMENTS AVAILABLE for zipcode={zipcode} recipients={recipientgroup}!")
+                        for recipient in recipientgroup:
+                            message = tclient.messages.create(
+                                body=f"Appointments available for {age} in {industry} at {county},{zipcode}. Current time is {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
+                                from_=fromnumber,
+                                to=recipient
+                            )
+                            print(recipient, message.sid)
+                    else:
+                        print(f"CALENDAR BUT APPOINTMENTS NOT AVAILABLE for zipcode={zipcode} recipients={recipientgroup}!")
+                # go back
+                if zipcode != zipcodes[-1]:
+                    WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                    get_element(wait, "//a[contains(text(),'Change')]").click()
         else:
             print("IDK WHERE I AM:", driver.current_url)
             message = tclient.messages.create(
-                body=f"Notifier failed for {age} in {industry} at {county},{zipcode} und={undcondition} dis={disability} at {currtime}!",
+                body=f"Notifier failed for {age} in {industry} at {county},{zipcodes} und={undcondition} dis={disability} at {currtime}!",
                 from_=fromnumber,
                 to=maintainernum
             )
