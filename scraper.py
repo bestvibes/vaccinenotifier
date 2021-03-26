@@ -100,7 +100,7 @@ def main():
         user_agent = agents[random.randint(0, len(agents)-1)]
         print("user-agent:", user_agent)
         options.add_argument(f'user-agent={user_agent}')
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(CHROMEDRIVER, options=options)
         driver.implicitly_wait(SLEEPTIME) # seconds
         driver.get(URL)
         wait = WebDriverWait(driver, 10)
