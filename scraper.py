@@ -183,9 +183,8 @@ def main():
                                 get_element(wait, "//button[@type='button' and @class='calendar__next']").click()
                             else:
                                 break
-                        if (zipcode != zipcodes[-1]): # so we can check other zipcodes later
-                            WebDriverWait(driver, 4).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
-                            get_element(wait, "//a[@data-testid='appointment-select-change-location']").click()
+                        WebDriverWait(driver, 4).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
+                        get_element(wait, "//a[@data-testid='appointment-select-change-location']").click()
                         if apptfound:
                             break
                     if apptfound:
