@@ -117,9 +117,11 @@ def main():
         if 'HEAD' not in os.environ:
             options.add_argument('headless')
         # user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
-        ua = UserAgent()
-        agents = [ua.ie, ua.opera, ua.safari]
-        user_agent = agents[random.randint(0, len(agents)-1)]
+        user_agent = ""
+        while len(user_agent) == 0 or "MSIE 10.0; Windows 3.1" in user_agent:
+            ua = UserAgent()
+            agents = [ua.ie, ua.safari]
+            user_agent = agents[random.randint(0, len(agents)-1)]
         print("user-agent:", user_agent)
         options.add_argument(f'user-agent={user_agent}')
         driver = webdriver.Chrome(CHROMEDRIVER, options=options)
