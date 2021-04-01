@@ -174,7 +174,11 @@ def main():
                     apptfound = False
                     numlocations = len(driver.find_elements_by_xpath("//button[@type='button' and contains(text(),'See availability')]"))
                     for i in range(numlocations):
-                        location = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")[i]
+                        all_locations = get_elements(wait, "//button[@type='button' and contains(text(),'See availability')]")
+                        if (len(all_locations) > i):
+                            location = all_locations[i]
+                        else:
+                            continue
                         location.click()
                         for _ in range(2): # up to 1 months ahead
                             WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
