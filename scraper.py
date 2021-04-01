@@ -177,7 +177,10 @@ def main():
                                 date.click()
                                 WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                                 # hasappts = get_elements(wait, "//button[@type='button' and @data-testid='appointment-select-timeslot']")
-                                hasappts = get_elements(wait, "//*[@type='button' and (contains(text(), 'am') or contains(text(), 'pm') or contains(text(), 'AM') or contains(text(), 'PM'))]")
+                                try:
+                                    hasappts = get_elements(wait, "//*[@type='button' and (contains(text(), 'am') or contains(text(), 'pm') or contains(text(), 'AM') or contains(text(), 'PM'))]")
+                                except TimeoutException:
+                                    hasappts = []
                                 if len(hasappts) > 0:
                                     apptfound = True
                                     break
