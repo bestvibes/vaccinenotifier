@@ -129,6 +129,10 @@ def main():
         driver.get(URL)
         wait = WebDriverWait(driver, 10)
 
+        if len(driver.find_elements_by_xpath("//div[@role='alert' and contains(text(), 'making important changes to the website')]")) > 0:
+            print("SITE UNDER MAINTENANCE")
+            return
+
         get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
         get_element(wait, "//input[@name='q-screening-18-yr-of-age']").click()
         get_element(wait, "//input[@name='q-screening-health-data']").click()
