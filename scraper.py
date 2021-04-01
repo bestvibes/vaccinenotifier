@@ -176,8 +176,8 @@ def main():
                                 WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
                                 date.click()
                                 WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
-                                hasappts = get_elements(wait, "//*[contains(text(), 'appointments available')]")
-                                if len(hasappts) > 0 and not hasappts[0].text.startswith("0 appointments"):
+                                hasappts = get_elements(wait, "//button[@type='button' and @data-testid='appointment-select-timeslot']")
+                                if len(hasappts) > 0 and ":" in hasappts[0].text:
                                     apptfound = True
                                     break
                             if not apptfound:
