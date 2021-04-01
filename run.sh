@@ -23,5 +23,5 @@ while true; do
         echo "Time in seconds: ${T}"
     done < clean_list.csv
     date
-    (set -x; sleep 900)
+    (set -x; sleep 600)
 done
