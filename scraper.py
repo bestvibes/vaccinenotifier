@@ -161,12 +161,15 @@ def main():
             for zipcode, recipientgroup in zip(zipcodes, recipientgroups):
                 print(f"CHECKING APPTS for zipcode={zipcode} recipients={recipientgroup}")
                 zipcode_input = get_element(wait, "//input[@id='location-search-input']")
-                zipcode_input.clear()
+                zipcode_input.send_keys(Keys.BACKSPACE * 5);
                 zipcode_input.send_keys(zipcode+Keys.RETURN)
                 WebDriverWait(driver, 2).until(EC.invisibility_of_element((By.XPATH, "//div[class='loader-background']")))
 
                 if 'No appointments are available' in driver.page_source:
                     print(f"APPOINTMENTS NOT AVAILABLE for zipcode={zipcode} recipients={recipientgroup}!")
+                elif 'Unable to find a location' in driver.page_source:
+                    print(f"INVALID LOCATION for zipcode={zipcode} recipients={recipientgroup}!")
+                    continue
                 else:
                     apptfound = False
                     numlocations = len(driver.find_elements_by_xpath("//button[@type='button' and contains(text(),'See availability')]"))
