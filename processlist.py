@@ -57,4 +57,4 @@ for k,g in itertools.groupby(sorted(lines), key=lambda l: l[:-2]):
     grouped_lines.append(group)
 print(grouped_lines)
 with open("clean_list.csv", 'w+') as f:
-    f.write('\n'.join(map(lambda l: ','.join(map(lambda e: '"'+e+'"', l)), grouped_lines))+'\n')
+    f.write('\n'.join(map(lambda l: '^'.join(map(lambda e: '"'+e+'"', l)), grouped_lines))+'\n')

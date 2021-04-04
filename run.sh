@@ -23,7 +23,7 @@ while true; do
         ./textme.sh ERROR: processlist broken
     fi
     texted=0
-    while IFS=, read -r age ind county undcond disability zip num; do
+    while IFS='^' read -r age ind county undcond disability zip num; do
         T="$(date +%s)";
         (set -x; python3 scraper.py "$age" "$ind" "$county" "$undcond" "$disability" "$zip" "$num")
         if [ $? != 0 ] && [ $texted == 0 ]; then
