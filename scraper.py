@@ -55,7 +55,7 @@ def get_industries():
     return ["Chemical and hazardous materials", "Communications and IT", "Critical manufacturing", "Defense",
             "Education and childcare", "Emergency services", "Energy", "Financial services",
             "Food and Agriculture", "Government operations / community based essential functions", "Healthcare Worker",
-            # "Industrial, commercial, residential, and sheltering facilities and services",
+            "Industrial, commercial, residential, and sheltering facilities and services",
             "Retired", "Transportation and logistics", "Unemployed", "Water and wastewater",
             "Other"]
 def age_to_range(age):

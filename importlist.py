@@ -19,7 +19,7 @@ RANGE_NAME = 'Form Responses 1'
 def spreadsheet_to_scraper(row):
     scraper_row = [0]*Params.SCRAPER_NUM_ARGS
     for spreadsheet_i, scraper_i in Params.SPREADSHEET_TO_SCRAPER_MAP.items():
-        scraper_row[scraper_i] = row[spreadsheet_i]
+        scraper_row[scraper_i] = "\"" + row[spreadsheet_i] + "\""
     return ','.join(scraper_row)
 
 def main():

@@ -3,6 +3,7 @@
 import sys
 import itertools
 import collections
+import csv
 
 from scraper import age_to_range, get_industries, Params
 
@@ -14,8 +15,9 @@ filename = sys.argv[1]
 lines = []
 for filename in sys.argv[1:]:
     with open(filename, 'r') as f:
-        lines.extend(f.readlines())
-lines = [l.replace('"',"").strip().split(',') for l in lines if '#' not in l and l.strip() != ""]
+        reader = csv.reader(f)
+        lines = [row for row in reader]
+lines = [l for l in lines if not any(['#' in e for e in l])]
 lines = [[d.strip() for d in l] for l in lines]
 industries = get_industries()
 for l in lines:
