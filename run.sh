@@ -11,6 +11,9 @@ fi
 . ./venv/bin/activate
 while true; do
     (set -x; python3 processlist.py $@)
+    if [ $? != 0 ]; then
+        ./textme.sh ERROR: processlist broken
+    fi
     texted=0
     while IFS=, read -r age ind county undcond disability zip num; do
         T="$(date +%s)";
