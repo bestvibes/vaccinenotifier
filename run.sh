@@ -3,6 +3,14 @@ source env.sh
 
 set -uo pipefail
 
+exit_script() {
+    echo "exitting..."
+    trap - SIGINT SIGTERM # clear the trap
+    kill -- -$$ # Sends SIGTERM to child/sub processes
+}
+
+trap exit_script SIGINT SIGTERM
+
 if [ $# -eq 0 ]; then
     echo "specify input data!"
     exit 1
