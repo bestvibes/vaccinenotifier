@@ -87,6 +87,7 @@ def main():
         print(f"Usage: {sys.argv[0]} age industry county undcond disability zipcodes recipientgroups")
         sys.exit(1)
 
+    sys.argv = list(map(lambda x: x.replace('"', ""), sys.argv))
     currtime = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
     age = sys.argv[Params.SCRAPER_AGE_INDEX+1]
     industry = sys.argv[Params.SCRAPER_INDUSTRY_INDEX+1]
