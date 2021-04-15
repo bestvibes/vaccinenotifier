@@ -27,21 +27,15 @@ class Params:
     SPREADSHEET_ZIPCODE_INDEX = 8
     SPREADSHEET_PHONE_INDEX = 9
 
-    SCRAPER_NUM_ARGS = 7 # no sub/unsub or timestamp
+    SCRAPER_NUM_ARGS = 4 # no sub/unsub or timestamp
     SCRAPER_AGE_INDEX = 0
-    SCRAPER_INDUSTRY_INDEX = 1
-    SCRAPER_COUNTY_INDEX = 2
-    SCRAPER_UNDCONDITION_INDEX = 3
-    SCRAPER_DISABILITY_INDEX = 4
-    SCRAPER_ZIPCODE_INDEX = 5
-    SCRAPER_PHONE_INDEX = 6
+    SCRAPER_COUNTY_INDEX = 1
+    SCRAPER_ZIPCODE_INDEX = 2
+    SCRAPER_PHONE_INDEX = 3
 
     SPREADSHEET_TO_SCRAPER_MAP = {
         SPREADSHEET_AGE_INDEX : SCRAPER_AGE_INDEX,
-        SPREADSHEET_INDUSTRY_INDEX : SCRAPER_INDUSTRY_INDEX,
         SPREADSHEET_COUNTY_INDEX : SCRAPER_COUNTY_INDEX,
-        SPREADSHEET_UNDCONDITION_INDEX : SCRAPER_UNDCONDITION_INDEX,
-        SPREADSHEET_DISABILITY_INDEX : SCRAPER_DISABILITY_INDEX,
         SPREADSHEET_ZIPCODE_INDEX : SCRAPER_ZIPCODE_INDEX,
         SPREADSHEET_PHONE_INDEX : SCRAPER_PHONE_INDEX
     }
@@ -80,25 +74,19 @@ def get_elements(driverwait, xpath):
 def main():
     if len(sys.argv) != Params.SCRAPER_NUM_ARGS+1:
         print(sys.argv)
-        print(f"Usage: {sys.argv[0]} age industry county undcond disability zipcodes recipientgroups")
+        print(f"Usage: {sys.argv[0]} age county zipcodes recipientgroups")
         sys.exit(1)
 
     sys.argv = list(map(lambda x: x.replace('"', ""), sys.argv))
     currtime = datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")
     age = sys.argv[Params.SCRAPER_AGE_INDEX+1]
-    industry = sys.argv[Params.SCRAPER_INDUSTRY_INDEX+1]
     county = sys.argv[Params.SCRAPER_COUNTY_INDEX+1]
-    undcondition = sys.argv[Params.SCRAPER_UNDCONDITION_INDEX+1]
-    disability = sys.argv[Params.SCRAPER_DISABILITY_INDEX+1]
     zipcodes = sys.argv[Params.SCRAPER_ZIPCODE_INDEX+1].split('|')
     recipientgroups = sys.argv[Params.SCRAPER_PHONE_INDEX+1].split('||')
 
     recipientgroups = list(map(lambda x: x.split("|"), recipientgroups))
 
-    assert industry in get_industries(), industry
     assert county[0].isupper(), county
-    assert undcondition in ["Yes", "No"]
-    assert disability in ["Yes", "No"]
     assert len(zipcodes)==len(recipientgroups)
     assert all(map(lambda z: len(z) == 5, zipcodes))
     for recipientgroup in recipientgroups:
@@ -108,7 +96,7 @@ def main():
     age = age_to_range(age)
 
     try:
-        print(f"Checking for age={age} ind={industry} county={county} zip={zipcodes} und={undcondition} dis={disability} at {currtime}\nrecipients={recipientgroups}")
+        print(f"Checking for age={age} county={county} zip={zipcodes} at {currtime}\nrecipients={recipientgroups}")
         URL = 'https://myturn.ca.gov'
         options = webdriver.ChromeOptions()
         if 'HEAD' not in os.environ:
@@ -148,9 +136,9 @@ def main():
         signuplink = os.environ['SIGNUP_LINK']
         tclient = Client(account_sid, auth_token)
         if 'ineligible' in driver.current_url:
-            print(f"INELIGIBLE for age={age} county={county} industry={industry} und={undcondition} dis={disability}")
+            print(f"INELIGIBLE for age={age} county={county}")
         elif 'location' in driver.current_url:
-            print(f"ELIGIBLE for age={age} county={county} industry={industry} und={undcondition} dis={disability}")
+            print(f"ELIGIBLE for age={age} county={county}")
 
             for zipcode, recipientgroup in zip(zipcodes, recipientgroups):
                 print(f"CHECKING APPTS for zipcode={zipcode} recipients={recipientgroup}")
@@ -202,7 +190,7 @@ def main():
                         print(f"APPOINTMENTS AVAILABLE for zipcode={zipcode} recipients={recipientgroup}!")
                         for recipient in recipientgroup:
                             message = tclient.messages.create(
-                                body=f"Appointments available for {age} in {industry} at {county},{zipcode}. Current time is {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
+                                body=f"Appointments available for {age} at {county},{zipcode}. Current time is {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
                                 from_=fromnumber,
                                 to=recipient
                             )
@@ -216,7 +204,7 @@ def main():
         else:
             print("IDK WHERE I AM:", driver.current_url)
             message = tclient.messages.create(
-                body=f"Notifier failed for {age} in {industry} at {county},{zipcodes} und={undcondition} dis={disability} at {currtime}!",
+                body=f"Notifier failed for {age} at {county},{zipcodes} at {currtime}!",
                 from_=fromnumber,
                 to=maintainernum
             )

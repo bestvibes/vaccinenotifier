@@ -23,14 +23,7 @@ industries = get_industries()
 for l in lines:
     assert len(l) == Params.SCRAPER_NUM_ARGS, l
     l[Params.SCRAPER_AGE_INDEX] = age_to_range(l[Params.SCRAPER_AGE_INDEX])
-    assert l[Params.SCRAPER_INDUSTRY_INDEX].replace('"', "") in industries, l
     assert l[Params.SCRAPER_COUNTY_INDEX][0].isupper(), l
-    if (l[Params.SCRAPER_UNDCONDITION_INDEX] == ""):
-        l[Params.SCRAPER_UNDCONDITION_INDEX] = "No"
-    assert l[Params.SCRAPER_UNDCONDITION_INDEX] in ["Yes", "No"], l
-    if (l[Params.SCRAPER_DISABILITY_INDEX] == ""):
-        l[Params.SCRAPER_DISABILITY_INDEX] = "No"
-    assert l[Params.SCRAPER_DISABILITY_INDEX] in ["Yes", "No"], l
     assert len(l[Params.SCRAPER_ZIPCODE_INDEX]) == 5, l
     assert len(l[Params.SCRAPER_PHONE_INDEX]) >= 12, l
     for num in l[Params.SCRAPER_PHONE_INDEX].split('|'):
@@ -38,8 +31,8 @@ for l in lines:
         assert num[1] == '1', num
 
 grouped_lines = []
-for k,g in itertools.groupby(sorted(lines), key=lambda l: l[:-2]):
-    group = k
+for k,g in itertools.groupby(sorted(lines, key=lambda l: (l[Params.SCRAPER_AGE_INDEX], l[Params.SCRAPER_COUNTY_INDEX])), key=lambda l: (l[Params.SCRAPER_AGE_INDEX], l[Params.SCRAPER_COUNTY_INDEX])):
+    group = list(k)
     # numbers = set()
     numbers = collections.defaultdict(set)
     for line in g:
