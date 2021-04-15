@@ -50,7 +50,7 @@ SLEEPTIME = 3
 CHROMEDRIVER = os.environ['CHROMEDRIVER_PATH']
 
 def get_age_ranges():
-    return ["16 - 49", "50-64", "65 - 74", "75 and older"]
+    return ["16 - 17", "18 and older"]
 def get_industries():
     return ["Chemical and hazardous materials", "Communications and IT", "Critical manufacturing", "Defense",
             "Education and childcare", "Emergency services", "Energy", "Financial services",
@@ -64,14 +64,10 @@ def age_to_range(age):
         ret = age
     else:
         age = int(age)
-        if age <= 49:
+        if age <= 17:
             ret = age_ranges[0]
-        elif age <= 64:
-            ret = age_ranges[1]
-        elif age <= 74:
-            ret = age_ranges[2]
         else:
-            ret = age_ranges[3]
+            ret = age_ranges[1]
     assert ret in age_ranges, ret
     return ret
 
@@ -137,13 +133,10 @@ def main():
         get_element(wait, "//button[@type='button' and @data-testid='landing-page-continue']").click()
         get_element(wait, "//input[@name='q-screening-18-yr-of-age']").click()
         get_element(wait, "//input[@name='q-screening-health-data']").click()
-        get_element(wait, "//input[@name='q-screening-accuracy-attestation']").click()
         get_element(wait, "//input[@name='q-screening-privacy-statement']").click()
         get_element(wait, "//input[@name='q-screening-eligibility-age-range' and @value='{}']".format(age)).click()
-        get_element(wait, "//input[@name='q-screening-underlying-health-condition' and @value='{}']".format(undcondition)).click()
-        get_element(wait, "//input[@name='q-screening-disability' and @value='{}']".format(disability)).click()
-        get_element(wait, "//select[@name='q-screening-eligibility-industry']/option[text()='{}']".format(industry)).click()
         get_element(wait, "//select[@name='q-screening-eligibility-county']/option[text()='{}']".format(county)).click()
+        get_element(wait, "//input[@name='q-screening-different-county' and @value='{}']".format("No")).click()
         get_element(wait, "//button[@type='submit']").click()
 
         wait.until(EC.url_matches("(ineligible|location)"))
