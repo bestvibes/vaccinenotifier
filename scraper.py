@@ -14,6 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from twilio.rest import Client
 from fake_useragent import UserAgent
+from twilio.base.exceptions import TwilioRestException
 
 class Params:
     SPREADSHEET_NUM_COLS = 10
@@ -189,12 +190,19 @@ def main():
                     if apptfound:
                         print(f"APPOINTMENTS AVAILABLE for zipcode={zipcode} recipients={recipientgroup}!")
                         for recipient in recipientgroup:
-                            message = tclient.messages.create(
-                                body=f"Appointments available for {age} at {county},{zipcode}. Current time is {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
-                                from_=fromnumber,
-                                to=recipient
-                            )
-                            print(recipient, message.sid)
+                            try:
+                                message = tclient.messages.create(
+                                    body=f"Appointments available for {age} at {county},{zipcode}. Current time is {currtime}. {URL}. If you already have an appointment, you can unsubscribe at {signuplink}.",
+                                    from_=fromnumber,
+                                    to=recipient
+                                )
+                                print(recipient, message.sid)
+                            except TwilioRestException as e:
+                                if "blacklist rule" in str(e):
+                                    print(recipient, "BLACKLIST:", e)
+                                else:
+                                    print("stre:", str(e))
+                                    raise e
                     else:
                         print(f"CALENDAR BUT APPOINTMENTS NOT AVAILABLE for zipcode={zipcode} recipients={recipientgroup}!")
                 # go back
