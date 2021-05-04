@@ -15,6 +15,8 @@ are available on the calender, sends texts to all the subscriptions in the group
 
 This full pipeline is run periodically in a stateless fashion for security, reliability and consistency.
 
+A file called env.sh is needed with a few environment variable populated with sensitive information. If you care enough, you can go through the code to find out which variables are needed.
+
 ## Disclaimer
 Many tricks were used to bypass bot detection for the vaccine appointment website, all of which
 are not present in this codebase and I will not go into. I made the best effort I could to ensure all users receiving texts were truly eligible for the
